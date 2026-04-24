@@ -15,6 +15,27 @@
       "when": 1776998345757,
       "tag": "0001_sloppy_eddie_brock",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1777001744797,
+      "tag": "0002_massive_rhodey",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1777001774424,
+      "tag": "0003_woozy_lockheed",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1777001823535,
+      "tag": "0004_outgoing_wolfsbane",
+      "breakpoints": true
     }
   ]
 }
