@@ -1,10 +1,13 @@
 import { Elysia } from "elysia";
 
+import { usersRoute } from "./routes/users-route";
+
 const app = new Elysia()
   .get("/", () => ({
     message: "Hello Elysia!",
     status: "online"
   }))
+  .use(usersRoute)
   .listen(3000);
 
 console.log(
