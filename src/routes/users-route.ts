@@ -1,5 +1,13 @@
 import { Elysia, t } from "elysia";
 import { registerUser, loginUser, getCurrentUser } from "../services/user-service";
+import { AppError, UnauthorizedError } from "../errors/app-error";
+
+export function extractBearerToken(authorization?: string): string | null {
+  if (!authorization || !authorization.startsWith("Bearer ")) {
+    return null;
+  }
+  return authorization.split(" ")[1] || null;
+}
 
 export const usersRoute = new Elysia()
   .post(
@@ -8,9 +16,9 @@ export const usersRoute = new Elysia()
       try {
         const result = await registerUser(body);
         return result;
-      } catch (error: any) {
-        if (error.message === "Email sudah terdaftar") {
-          set.status = 400;
+      } catch (error: unknown) {
+        if (error instanceof AppError) {
+          set.status = error.statusCode;
           return { error: error.message };
         }
         set.status = 500;
@@ -31,9 +39,9 @@ export const usersRoute = new Elysia()
       try {
         const result = await loginUser(body);
         return result;
-      } catch (error: any) {
-        if (error.message === "Email atau password salah") {
-          set.status = 401;
+      } catch (error: unknown) {
+        if (error instanceof AppError) {
+          set.status = error.statusCode;
           return { error: error.message };
         }
         set.status = 500;
@@ -51,23 +59,45 @@ export const usersRoute = new Elysia()
     "/api/users/current",
     async ({ headers, set }) => {
       try {
-        const authHeader = headers.authorization;
-        const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+        const token = extractBearerToken(headers.authorization);
 
         if (!token) {
-          set.status = 401;
-          return { error: "Unauthorized" };
+          throw new UnauthorizedError("Unauthorized");
         }
 
         const result = await getCurrentUser(token);
         return result;
-      } catch (error: any) {
-        if (error.message === "Unauthorized") {
-          set.status = 401;
+      } catch (error: unknown) {
+        if (error instanceof AppError) {
+          set.status = error.statusCode;
           return { error: error.message };
         }
         set.status = 500;
         return { error: "Internal Server Error" };
       }
+    },
+    {
+      headers: t.Object(
+        {
+          authorization: t.String({ error: "Authorization header with Bearer token is required" }),
+        },
+        { allowUnknownHeaders: true }
+      ),
+      response: {
+        200: t.Object({
+          data: t.Object({
+            id: t.Number(),
+            name: t.String(),
+            email: t.String(),
+            created_at: t.Any(),
+          }),
+        }),
+        401: t.Object({
+          error: t.String(),
+        }),
+        500: t.Object({
+          error: t.String(),
+        }),
+      },
     }
   );

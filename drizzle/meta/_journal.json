@@ -36,6 +36,13 @@
       "when": 1777001823535,
       "tag": "0004_outgoing_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1785622039384,
+      "tag": "0005_noisy_prowler",
+      "breakpoints": true
     }
   ]
 }
