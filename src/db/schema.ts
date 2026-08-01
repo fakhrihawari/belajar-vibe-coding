@@ -13,4 +13,6 @@ export const sessions = mysqlTable("sessions", {
   token: varchar("token", { length: 255 }).notNull(),
   userId: bigint("user_id", { mode: "number", unsigned: true }).notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
 });
+
